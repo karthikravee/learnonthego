@@ -34,6 +34,16 @@
                 text-shadow: 0px 0px 20px #ffeb3b;
             }
         }
+        .timestamp {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 18px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
         .poem {
             font-size: 18px;
             color: #ffffff;
@@ -43,20 +53,6 @@
             padding: 10px;
             border-radius: 5px;
             display: inline-block;
-        }
-        .timestamp-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-            font-size: 20px;
-        }
-        select {
-            margin-top: 5px;
-            font-size: 16px;
         }
         .game-container {
             margin-top: 50px;
@@ -76,60 +72,37 @@
             margin-bottom: 10px;
             color: #2c3e50;
         }
-        .click-counter {
+        .click-counter, .game-over {
             font-size: 20px;
             margin-top: 10px;
             color: #333;
+        }
+        .game-over {
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+            display: none;
         }
         canvas {
             background: #87CEEB;
             display: block;
             margin: auto;
             width: 100%;
-            height: auto;
-        }
-        @media (max-width: 768px) {
-            .title {
-                font-size: 8vw;
-            }
-            .subtitle {
-                font-size: 5vw;
-            }
-            .timestamp-container {
-                font-size: 3vw;
-                padding: 5px;
-            }
-            select {
-                font-size: 3vw;
-            }
-            .game-title {
-                font-size: 5vw;
-            }
-            .click-counter {
-                font-size: 4vw;
-            }
+            height: 300px;
         }
     </style>
 </head>
 <body>
+    <div class="timestamp" id="timestamp"></div>
     <div class="title">Knowledge Blitzkrieg</div>
     <div class="subtitle">AI Coded</div>
     <div class="poem">
-        With just a prompt, the magic began,<n        AI wrote the code, line by plan.<br>
+        With just a prompt, the magic began,<br>
+        AI wrote the code, line by plan.<br>
         No fingers moved, no keys were pressed,<br>
         Yet here it stands, among the best.<br>
         The genius spoke, the AI obeyed,<br>
         A digital world, swiftly laid.<br>
-    </div>
-    <div class="timestamp-container">
-        <div id="timestamp">Loading...</div>
-        <select id="timezone">
-            <option value="UTC">UTC</option>
-            <option value="America/New_York">New York (EST)</option>
-            <option value="Europe/London">London (GMT)</option>
-            <option value="Asia/Tokyo">Tokyo (JST)</option>
-            <option value="Asia/Kolkata">India (IST)</option>
-        </select>
     </div>
     
     <div class="game-container">
@@ -137,18 +110,86 @@
         <p>Click to start. Tap/click to make the bird fly!</p>
         <canvas id="birdGame" width="400" height="300"></canvas>
         <div class="click-counter">Clicks: <span id="clickCount">0</span></div>
+        <div class="game-over" id="gameOver">Game Over! Your Score: <span id="finalScore">0</span> <br> Click to Restart</div>
     </div>
     
     <script>
         function updateTimestamp() {
-            const timezone = document.getElementById("timezone").value;
-            const now = new Date().toLocaleString("en-GB", { timeZone: timezone, day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
-            document.getElementById("timestamp").textContent = now;
+            const now = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            document.getElementById("timestamp").textContent = now.toLocaleString('en-GB', options);
         }
-        
-        document.getElementById("timezone").addEventListener("change", updateTimestamp);
         setInterval(updateTimestamp, 1000);
         updateTimestamp();
+
+        const canvas = document.getElementById("birdGame");
+        const ctx = canvas.getContext("2d");
+        let birdY = canvas.height / 2;
+        let velocity = 0;
+        let gravity = 0.5;
+        let isGameOver = false;
+        let clickCount = 0;
+        let gameStarted = false;
+
+        function drawBird() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(50, birdY);
+            ctx.lineTo(40, birdY + 15);
+            ctx.lineTo(60, birdY + 15);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function updateGame() {
+            if (!gameStarted || isGameOver) return;
+            velocity += gravity;
+            birdY += velocity;
+            if (birdY >= canvas.height || birdY <= 0) {
+                gameOver();
+            }
+            drawBird();
+            requestAnimationFrame(updateGame);
+        }
+
+        function flap() {
+            if (!gameStarted) {
+                gameStarted = true;
+                updateGame();
+            }
+            if (isGameOver) return;
+            velocity = -8;
+            clickCount++;
+            document.getElementById("clickCount").textContent = clickCount;
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            document.getElementById("gameOver").style.display = "block";
+            document.getElementById("finalScore").textContent = clickCount;
+        }
+
+        function resetGame() {
+            isGameOver = false;
+            gameStarted = false;
+            birdY = canvas.height / 2;
+            velocity = 0;
+            clickCount = 0;
+            document.getElementById("clickCount").textContent = clickCount;
+            document.getElementById("gameOver").style.display = "none";
+            drawBird();
+        }
+
+        canvas.addEventListener("click", function() {
+            if (isGameOver) {
+                resetGame();
+            } else {
+                flap();
+            }
+        });
+
+        drawBird();
     </script>
 </body>
 </html>
