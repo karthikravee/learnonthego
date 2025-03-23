@@ -13,14 +13,14 @@
             text-align: center;
         }
         .title {
-            font-size: 36px;
+            font-size: 50px;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             margin-bottom: 5px;
         }
         .subtitle {
-            font-size: 20px;
+            font-size: 30px;
             font-weight: bold;
             color: #ffeb3b;
             text-shadow: 0px 0px 10px #ffeb3b;
@@ -35,16 +35,18 @@
             }
         }
         .timestamp-container {
-            position: absolute;
+            position: fixed;
             top: 10px;
             right: 10px;
             background: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
         }
         select {
             margin-top: 5px;
+            font-size: 16px;
         }
         .game-container {
             margin-top: 50px;
@@ -52,8 +54,11 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            width: 100%;
+            width: 80%;
+            max-width: 600px;
             box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
         }
         .game-title {
             font-size: 24px;
@@ -62,7 +67,7 @@
             color: #2c3e50;
         }
         .click-counter {
-            font-size: 18px;
+            font-size: 20px;
             margin-top: 10px;
             color: #333;
         }
@@ -70,6 +75,28 @@
             background: #87CEEB;
             display: block;
             margin: auto;
+            width: 100%;
+            height: auto;
+        }
+        @media (max-width: 768px) {
+            .title {
+                font-size: 8vw;
+            }
+            .subtitle {
+                font-size: 5vw;
+            }
+            .timestamp-container {
+                font-size: 4vw;
+            }
+            select {
+                font-size: 3vw;
+            }
+            .game-title {
+                font-size: 5vw;
+            }
+            .click-counter {
+                font-size: 4vw;
+            }
         }
     </style>
 </head>
@@ -88,7 +115,7 @@
     </div>
     
     <div class="game-container">
-        <div class="game-title">Flappy Bird</div>
+        <div class="game-title">Flappy Bird Clone</div>
         <p>Click to start. Tap/click to make the bird fly!</p>
         <canvas id="birdGame" width="400" height="300"></canvas>
         <div class="click-counter">Clicks: <span id="clickCount">0</span></div>
