@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timestamp with Timezone</title>
+    <title>Learnonthego</title>
     <style>
         body {
             background: linear-gradient(to right, #1e3c72, #2a5298);
@@ -33,6 +33,16 @@
             to {
                 text-shadow: 0px 0px 20px #ffeb3b;
             }
+        }
+        .poem {
+            font-size: 18px;
+            color: #ffffff;
+            margin-top: 20px;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
         }
         .timestamp-container {
             position: fixed;
@@ -86,7 +96,8 @@
                 font-size: 5vw;
             }
             .timestamp-container {
-                font-size: 4vw;
+                font-size: 3vw;
+                padding: 5px;
             }
             select {
                 font-size: 3vw;
@@ -103,6 +114,13 @@
 <body>
     <div class="title">Knowledge Blitzkrieg</div>
     <div class="subtitle">AI Coded</div>
+    <div class="poem">
+        With just a prompt, the magic began,<n        AI wrote the code, line by plan.<br>
+        No fingers moved, no keys were pressed,<br>
+        Yet here it stands, among the best.<br>
+        The genius spoke, the AI obeyed,<br>
+        A digital world, swiftly laid.<br>
+    </div>
     <div class="timestamp-container">
         <div id="timestamp">Loading...</div>
         <select id="timezone">
@@ -131,65 +149,6 @@
         document.getElementById("timezone").addEventListener("change", updateTimestamp);
         setInterval(updateTimestamp, 1000);
         updateTimestamp();
-        
-        const canvas = document.getElementById("birdGame");
-        const ctx = canvas.getContext("2d");
-        const clickCounter = document.getElementById("clickCount");
-        
-        let birdY;
-        let velocity;
-        let gravity = 0.6;
-        let isGameStarted = false;
-        let clickCount = 0;
-        
-        function resetGame() {
-            birdY = 150;
-            velocity = 0;
-            isGameStarted = false;
-            clickCount = 0;
-            clickCounter.textContent = clickCount;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBird();
-        }
-        
-        function drawBird() {
-            ctx.fillStyle = "yellow";
-            ctx.beginPath();
-            ctx.moveTo(50, birdY);
-            ctx.lineTo(70, birdY + 15);
-            ctx.lineTo(50, birdY + 30);
-            ctx.closePath();
-            ctx.fill();
-        }
-        
-        function updateGame() {
-            if (!isGameStarted) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            velocity += gravity;
-            birdY += velocity;
-            drawBird();
-            
-            if (birdY > canvas.height || birdY < 0) {
-                alert("Game Over! Click to restart.");
-                resetGame();
-                return;
-            }
-            
-            requestAnimationFrame(updateGame);
-        }
-        
-        function flap() {
-            if (!isGameStarted) {
-                isGameStarted = true;
-                updateGame();
-            }
-            velocity = -8;
-            clickCount++;
-            clickCounter.textContent = clickCount;
-        }
-        
-        canvas.addEventListener("click", flap);
-        resetGame();
     </script>
 </body>
 </html>
