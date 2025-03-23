@@ -3,57 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Zone Display</title>
+    <title>Timestamp with Timezone</title>
     <style>
         body {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background: white;
+            margin: 0;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
-        select, button {
-            margin-top: 10px;
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 0px 0px 10px #ffeb3b;
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0px 0px 5px #ffeb3b;
+            }
+            to {
+                text-shadow: 0px 0px 20px #ffeb3b;
+            }
+        }
+        .timestamp-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        select {
+            margin-top: 5px;
+        }
+        .game-container {
+            margin-top: 50px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .click-counter {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #333;
+        }
+        canvas {
+            background: #87CEEB;
+            display: block;
+            margin: auto;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Current Time</h2>
-        <p id="time">Loading...</p>
-        <label for="timezone">Select Timezone:</label>
+    <div class="title">Knowledge Blitzkrieg</div>
+    <div class="subtitle">AI Coded</div>
+    <div class="timestamp-container">
+        <div id="timestamp">Loading...</div>
         <select id="timezone">
-            <option value="Asia/Kolkata">IST (Indian Standard Time)</option>
-            <option value="America/New_York">EST (Eastern Standard Time)</option>
-            <option value="Europe/London">GMT (Greenwich Mean Time)</option>
-            <option value="Asia/Tokyo">JST (Japan Standard Time)</option>
+            <option value="UTC">UTC</option>
+            <option value="America/New_York">New York (EST)</option>
+            <option value="Europe/London">London (GMT)</option>
+            <option value="Asia/Tokyo">Tokyo (JST)</option>
+            <option value="Asia/Kolkata">India (IST)</option>
         </select>
     </div>
     
+    <div class="game-container">
+        <div class="game-title">Flappy Bird</div>
+        <p>Click to start. Tap/click to make the bird fly!</p>
+        <canvas id="birdGame" width="400" height="300"></canvas>
+        <div class="click-counter">Clicks: <span id="clickCount">0</span></div>
+    </div>
+    
     <script>
-        function updateTime() {
-            const timezone = document.getElementById('timezone').value;
-            const timeElement = document.getElementById('time');
-            const now = new Date();
-            const options = { timeZone: timezone, hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            timeElement.innerText = new Intl.DateTimeFormat('en-US', options).format(now);
+        function updateTimestamp() {
+            const timezone = document.getElementById("timezone").value;
+            const now = new Date().toLocaleString("en-GB", { timeZone: timezone, day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+            document.getElementById("timestamp").textContent = now;
         }
         
-        document.getElementById('timezone').addEventListener('change', updateTime);
-        setInterval(updateTime, 1000);
-        updateTime();
+        document.getElementById("timezone").addEventListener("change", updateTimestamp);
+        setInterval(updateTimestamp, 1000);
+        updateTimestamp();
+        
+        const canvas = document.getElementById("birdGame");
+        const ctx = canvas.getContext("2d");
+        const clickCounter = document.getElementById("clickCount");
+        
+        let birdY;
+        let velocity;
+        let gravity = 0.6;
+        let isGameStarted = false;
+        let clickCount = 0;
+        
+        function resetGame() {
+            birdY = 150;
+            velocity = 0;
+            isGameStarted = false;
+            clickCount = 0;
+            clickCounter.textContent = clickCount;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBird();
+        }
+        
+        function drawBird() {
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.moveTo(50, birdY);
+            ctx.lineTo(70, birdY + 15);
+            ctx.lineTo(50, birdY + 30);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function updateGame() {
+            if (!isGameStarted) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            velocity += gravity;
+            birdY += velocity;
+            drawBird();
+            
+            if (birdY > canvas.height || birdY < 0) {
+                alert("Game Over! Click to restart.");
+                resetGame();
+                return;
+            }
+            
+            requestAnimationFrame(updateGame);
+        }
+        
+        function flap() {
+            if (!isGameStarted) {
+                isGameStarted = true;
+                updateGame();
+            }
+            velocity = -8;
+            clickCount++;
+            clickCounter.textContent = clickCount;
+        }
+        
+        canvas.addEventListener("click", flap);
+        resetGame();
     </script>
 </body>
 </html>
